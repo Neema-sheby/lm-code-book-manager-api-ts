@@ -91,6 +91,7 @@ describe("GET /api/v1/books/{bookId} endpoint", () => {
 
 		// Assert
 		expect(res.statusCode).toEqual(404);
+		expect(res.body).toEqual("Not found");
 	});
 
 	test("controller successfully returns book object as JSON", async () => {
@@ -131,6 +132,24 @@ describe("POST /api/v1/books endpoint", () => {
 
 		// Assert
 		expect(res.statusCode).toEqual(400);
+		expect(res.body).toEqual({
+			message: "Error saving book",
+		});
+	});
+
+	test("status code 400 when saving book that already exists", async () => {
+		const res = await request(app).post("/api/v1/books").send({
+			bookId: 1,
+			title: "The Hobbit",
+			author: "J. R. R. Tolkien",
+			description: "Someone finds a nice piece of jewellery while on holiday.",
+		});
+
+		// Assert
+		expect(res.statusCode).toEqual(400);
+		expect(res.body).toEqual(
+			"This book already exists! Please choose a different title or author for your book."
+		);
 	});
 });
 
@@ -141,7 +160,7 @@ describe("test to check /api/v1/books/:id endpoint to delete", () => {
 		const resDelete = await request(app).delete("/api/v1/books/2");
 
 		expect(resDelete.statusCode).toEqual(200);
-		expect(resDelete.body).toEqual({ message: `Deleted book` });
+		expect(resDelete.body).toEqual("Deleted book");
 	});
 
 	test("status code 404 when book to delete cannot be found by id", async () => {
@@ -150,8 +169,6 @@ describe("test to check /api/v1/books/:id endpoint to delete", () => {
 		const resDelete = await request(app).delete("/api/v1/books/10");
 
 		expect(resDelete.statusCode).toEqual(404);
-		expect(resDelete.body).toEqual({
-			message: "Cannot find book",
-		});
+		expect(resDelete.body).toEqual("Cannot find book");
 	});
 });
