@@ -19,11 +19,26 @@ export const getBook = async (req: Request, res: Response) => {
 
 export const saveBook = async (req: Request, res: Response) => {
 	const bookToBeSaved = req.body;
-	try {
-		const book = await bookService.saveBook(bookToBeSaved);
-		res.status(201).json(book);
-	} catch (error) {
-		res.status(400).json({ message: (error as Error).message });
+	const books = await bookService.getBooks();
+
+	const isBookExisting = books.some(
+		(book) =>
+			book.title === bookToBeSaved.title && book.author === bookToBeSaved.author
+	);
+
+	if (!isBookExisting) {
+		try {
+			const book = await bookService.saveBook(bookToBeSaved);
+			res.status(201).json(book);
+		} catch (error) {
+			res.status(400).json({ message: (error as Error).message });
+		}
+	} else {
+		res
+			.status(400)
+			.json(
+				"This book already exists! Please choose a different title or author for your book."
+			);
 	}
 };
 
@@ -43,8 +58,8 @@ export const deleteBook = async (req: Request, res: Response) => {
 	const response = await bookService.deleteBook(bookId);
 
 	if (response === 1) {
-		res.status(200).json({ message: "Deleted book" });
+		res.status(200).json("Deleted book");
 	} else {
-		res.status(404).json({ message: "Cannot find book" });
+		res.status(404).json("Cannot find book");
 	}
 };
