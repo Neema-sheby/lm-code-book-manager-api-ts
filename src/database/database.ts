@@ -1,7 +1,10 @@
 import { Dialect, Sequelize } from "sequelize";
+import * as dotenv from "dotenv";
+
+const conString = `${process.env.DB_DIALECT}://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}/${process.env.DB_NAME}`;
 
 // TODO: This should be external config
-export let sequelize = new Sequelize("sqlite::memory:");
+export let sequelize = new Sequelize(conString);
 
 if (process.env.NODE_ENV !== "test") {
 	sequelize = new Sequelize(
