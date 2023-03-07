@@ -1,5 +1,4 @@
 import { Dialect, Sequelize } from "sequelize";
-import * as dotenv from "dotenv";
 
 const conString = `${process.env.DB_DIALECT}://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}/${process.env.DB_NAME}`;
 
